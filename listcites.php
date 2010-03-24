@@ -83,8 +83,6 @@ if (!class_exists('listcites_class'))
 			$cites = $wpdb->get_results("SELECT ID, post_id, meta_value, post_status FROM $wpdb->postmeta,$wpdb->posts WHERE meta_key='listcite' AND ID=post_id AND post_status = 'publish' ORDER BY rand() LIMIT 1");
 			$out['id']=$cites[0]->ID;
 			$cites=unserialize($cites[0]->meta_value);
-			print_r($cites);
-			
 			$cite=$cites[rand(0,count($cites)-1)];
 			
 			//$out =  new Object();
@@ -108,7 +106,7 @@ function listcite_show($mode=0) {
 	global $listcites;
 	//$a= $listcites->get_cites($mode);
 	$listcites->cite_show($mode);
-	print_r($a);
+	
 }
 
 function listcite_cite2db($post_ID) {
