@@ -68,6 +68,7 @@ if (!class_exists('listcites_class'))
 		
 		function cite_show() {
 			$obj=$this->get_cites();
+			print_r($obj);
 			echo '<blockquote>'.$obj->cite.'</blockquote><br /><cite><a href="'.$obj->link.'">Von hier</a></cite>';
 		}
 		
@@ -82,6 +83,8 @@ if (!class_exists('listcites_class'))
 			global $wpdb;
 			$cites = $wpdb->get_results("SELECT ID, post_author,post_date_gmt, post_id, meta_value, post_status FROM $wpdb->postmeta,$wpdb->posts WHERE meta_key='listcite' AND ID=post_id AND post_status = 'publish' ORDER BY rand() LIMIT 1");
 			$out['id']=$cites[0]->ID;
+			$out['author']=$cites[0]->post_author;
+			$out['date']=$cites[0]->post_date_gmt;
 			$cites=unserialize($cites[0]->meta_value);
 			$cite=$cites[rand(0,count($cites)-1)];
 			
