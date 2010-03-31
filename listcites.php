@@ -80,7 +80,7 @@ if (!class_exists('listcites_class'))
 		
 		function get_cites($mode=0) {
 			global $wpdb;
-			$cites = $wpdb->get_results("SELECT ID, post_id, meta_value, post_status FROM $wpdb->postmeta,$wpdb->posts WHERE meta_key='listcite' AND ID=post_id AND post_status = 'publish' ORDER BY rand() LIMIT 1");
+			$cites = $wpdb->get_results("SELECT ID, post_author,post_date_gmt, post_id, meta_value, post_status FROM $wpdb->postmeta,$wpdb->posts WHERE meta_key='listcite' AND ID=post_id AND post_status = 'publish' ORDER BY rand() LIMIT 1");
 			$out['id']=$cites[0]->ID;
 			$cites=unserialize($cites[0]->meta_value);
 			$cite=$cites[rand(0,count($cites)-1)];
