@@ -44,7 +44,7 @@ if (!class_exists('listcites_class'))
 		}
 
 		function ondelete() {
-			echo "<h3>ondelete<h3><xpre>";
+			//echo "<h3>ondelete<h3><xpre>";
 			global $wpdb;
 			$cites = $wpdb->get_results("
 			SELECT $wpdb->posts.ID 
@@ -54,7 +54,7 @@ if (!class_exists('listcites_class'))
 			");
 			
 			foreach ($cites as $c) {
-				echo "<h4>$c->ID</h4>";
+				//echo "<h4>$c->ID</h4>";
 				delete_post_meta($c->ID,'listcite');
 				$hit = $wpdb->get_results("
 			SELECT $wpdb->posts.post_content 
@@ -63,9 +63,7 @@ if (!class_exists('listcites_class'))
 			");
 			//$wpdb->show_errors();
 			//$wpdb->print_error();
-			//print_r($content);
 			$content=$hit[0]->post_content;
-			//echo "<p>".listcite_filter_tags($content)."</p>";
 			$wpdb->query("UPDATE $wpdb->posts SET post_content = '".listcite_filter_tags($content)."' WHERE ID = $c->ID" );
 
 			}
@@ -76,7 +74,7 @@ if (!class_exists('listcites_class'))
 			global $post;
 			$content=$_POST['post_content'];
 			$old_meta=get_post_meta( $post_ID, 'listcite' );
-			$pattern='/'.preg_quote($this->start_tag,'/').'(.*?)'.preg_quote($this->end_tag,'/').'/';
+			$pattern='/'.preg_quote($this->start_tag,'/').'(.*)'.preg_quote($this->end_tag,'/').'/isU';
 			preg_match_all($pattern,$content,$cites);
 			if (count($cites[1])>0) {
 				foreach ($cites[1] as $c) {
