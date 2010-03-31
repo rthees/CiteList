@@ -34,13 +34,42 @@ if (!class_exists('listcites_class'))
 			if (function_exists('register_uninstall_hook'))
 			register_uninstall_hook(__FILE__, array(
 			&$this,
-                    'on_delete'
+                    'ondelete'
                     ));
                     $widget_ops = array(
                 'classname' => 'listcites',
                 'description' => __('Show marked quotes of articles', 'listcites')
                     );
                     $this->WP_Widget('listcites', __('ListCites'), $widget_ops);
+		}
+
+		function ondelete() {
+			echo "<h3>ondelete<h3><xpre>";
+			global $wpdb;
+			$cites = $wpdb->get_results("
+			SELECT $wpdb->posts.ID 
+			FROM $wpdb->postmeta,$wpdb->posts 
+			WHERE meta_key='listcite' 
+			AND $wpdb->posts.ID=$wpdb->postmeta.post_id 
+			");
+			
+			foreach ($cites as $c) {
+				echo "<h4>$c->ID</h4>";
+				delete_post_meta($c->ID,'listcite');
+				$hit = $wpdb->get_results("
+			SELECT $wpdb->posts.post_content 
+			FROM $wpdb->posts 
+			WHERE ID=$c->ID 
+			");
+			//$wpdb->show_errors();
+			//$wpdb->print_error();
+			//print_r($content);
+			$content=$hit[0]->post_content;
+			//echo "<p>".listcite_filter_tags($content)."</p>";
+			$wpdb->query("UPDATE $wpdb->posts SET post_content = '".listcite_filter_tags($content)."' WHERE ID = $c->ID" );
+
+			}
+			echo "</xpre>";
 		}
 
 		function cite2db($post_ID) {
@@ -55,7 +84,7 @@ if (!class_exists('listcites_class'))
 				}
 				update_post_meta($post_ID,'listcite',$strip_c);
 			}
-				
+
 			if ((count($cites[1])==0) && $old_meta) {
 				delete_post_meta($post_ID,'listcite');
 			}
@@ -69,7 +98,7 @@ if (!class_exists('listcites_class'))
 
 		function listcite_filter_tags($content) {
 			$tags=Array('/'.preg_quote($this->start_tag,'/').'/','/'.preg_quote($this->end_tag,'/').'/');
-				
+
 			$reset=Array('','');
 			return preg_replace($tags,$reset,$content);
 		}
@@ -92,7 +121,7 @@ if (!class_exists('listcites_class'))
 			$out['date']=strftime('%d.%m.%Y',strtotime($cites[0]->post_date_gmt));
 			$cites=unserialize($cites[0]->meta_value);
 			$cite=$cites[rand(0,count($cites)-1)];
-				
+
 			//$out =  new Object();
 			$out['cite'] = $cite;
 			$out['link']=get_permalink($out['id']);
@@ -114,6 +143,7 @@ function listcite_show($mode=0) {
 	global $listcites;
 	//$a= $listcites->get_cites($mode);
 	$listcites->cite_show($mode);
+	//$listcites->xondelete();
 
 }
 
